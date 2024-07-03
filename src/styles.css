@@ -1,0 +1,173 @@
+/* You can add global styles to this file, and also import other style files */
+:root {
+    --background-0: #222831;
+    --background-1: #31363F;
+    --background-2: #35374B;
+    --background-3: #262736;
+    --White: #FFF;
+    --Grey-1: #EDEDED;
+    --Shadow-dark: rgba(0,0,0,0.3);
+    --Shadow-light: rgba(255,255,255,0.1);
+}
+
+@media screen and (min-width: 1000px) {
+   .temperature
+   {
+    font-size: 4rem;
+   }
+   .weathercode
+   {
+    font-size: 1.5rem;
+   }
+   .widget 
+   {
+    margin-top: 5px;
+    box-shadow: 5px 5px 20px var(--Shadow-dark);
+   }
+    
+}
+
+@media screen and (max-width: 999px) {
+    .temperature
+   {
+    font-size: 2.5rem;
+   }
+   .weathercode
+   {
+    font-size: 1rem;
+   }
+   .widget 
+   {
+    box-shadow: 5px 5px 20px var(--Shadow-dark);
+   }
+     
+ }
+
+ @media screen and (max-width: 525px) 
+ {
+    .widget 
+    {
+        box-shadow: 5px 5px 20px transparent;
+    }
+ }
+
+body
+{
+    font-family: -apple-system,  
+    BlinkMacSystemFont, sans-serif; 
+}
+
+.CityList
+{
+    max-height: 215px;
+    overflow: scroll;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+.HourlyList
+{
+    margin-top: 5px;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px transparent;
+    border-radius: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--background-0);
+    border-radius: 10px;
+  }
+
+.currentdate
+{
+    color: var(--White);
+    text-align: center;
+    margin-left: 5px;
+    font-size: 1rem;
+}
+
+.CurrentWeatherData
+{
+  padding: 20px;
+  background-color: var(--background-2);
+  border-radius: 20px;
+  min-width: 35vh;
+  max-width: 90%;
+  height: 350px;
+  align-content: start;
+}
+
+.CurrentWeatherData i
+{
+    margin-bottom: 5px;
+}
+
+.location 
+{
+    color: var(--White);
+    text-align: center;
+}
+
+.temperature
+{
+    color: var(--White);
+    text-align: center;
+
+}
+
+.weathercode
+{
+    color: var(--White);
+    text-align: center;
+}
+
+.widget
+{
+    background-color: var(--background-0);
+    border-radius: 20px;
+    min-width: 100px;
+    max-width: 100%;
+    height: 100px;
+}
+
+.sundata
+{
+    color: var(--White);
+    text-align: center;
+    justify-content: center;
+
+    font-size: 1.2rem;
+}
+
+.HourlyWeatherData
+{
+    padding: 20px;
+    background-color: var(--background-2);
+    border-radius: 20px;
+    min-width: 35vh;
+    max-width: 90%;
+    height: 350px;
+    box-shadow: 5px 5px 20px var(--Shadow-dark);
+}
+
+.WeeklyWeatherData
+{
+    padding: 20px;
+    background-color: var(--background-2);
+    border-radius: 20px;
+    min-width: 35vh;
+    max-width: 90%;
+    height: 350px;
+    box-shadow: 5px 5px 20px var(--Shadow-dark);
+}
+
+.list-group-item-action:hover
+{
+    background-color: white;
+}

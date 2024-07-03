@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <title>WeatherMainPage</title>
+  </head>
+
+  <header class="d-flex justify-content-center" style="padding-top: 10px;">
+
+    <!-- Search Bar-->
+      <form [formGroup]="CitySearch" class="SearchBar mb-4" (ngSubmit)="OnCitySearch()" style="background-color: var(--background-1); border-radius: 20px; padding:10px;box-shadow: 10px 10px 20px var(--Shadow-dark); padding-right: 25px;">
+        <div class="input-group mb-1" style="width: 100%;">
+          <span class="input-group-text" style="background-color: transparent; border-color: transparent;">
+            <i class="bi-geo-alt-fill" style="font-size: 1rem; color: var(--White);"></i>
+          </span>
+          <input type="text" class="form-control" formControlName="searchText" placeholder="Search city..." style="color: white ;background-color: var(--background-1); border-radius: 10px;"/>
+        </div>
+
+        <!-- City List -->
+        <div class="CityList">
+        <div class="list-group list-group-flush" *ngFor="let city of CitiesResult">
+          <button class="list-group-item list-group-item-action" (click)="selectCity(city)" style="background-color: transparent; color: var(--White);">
+            {{city.name}}
+            {{city.admin4}}
+            {{city.country_code}}
+            {{city.admin1}}
+          </button>
+        </div>
+      </div>
+      </form>
+  </header>
+
+  <body style="background-color: var(--background-0)">
+
+    <div class="container-fluid" *ngIf="CurrentWeatherData" style="background-color: var(--background-1); width: 98%; border-radius: 20px; padding: 25px;box-shadow: 10px 10px 20px var(--Shadow-dark); display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">      
+        
+          <!-- current weather -->
+          <div class="col-md" style="flex: 1;">
+            <div class="container CurrentWeatherData" style="box-shadow: 5px 5px 20px var(--Shadow-dark);">
+              <div class="row" style="justify-content: center; margin-bottom: 10px;">
+                <i class="bi-calendar" style="font-size: 1rem; color: var(--White);"></i>
+                <div class="currentdate">{{CurrentWeatherData.current.time | date: 'dd.MM.yyyy' }}</div>
+                <i class="bi-clock" style="font-size: 1rem; color: var(--White); margin-left: 10px;"></i>
+                <div class="currentdate">{{CurrentWeatherData.current.time | date: 'HH:mm' }}</div>
+              </div>
+              <div class="row" style="height: 50%; align-items: center; text-align: center;">
+                <div class="col-sm-6">
+                  <div class="bi {{getWeatherIcon(CurrentWeatherData.current.weather_code, CurrentWeatherData.current.is_day)}}" [ngStyle]="{'color': getIconColor(CurrentWeatherData.current.weather_code, CurrentWeatherData.current.is_day)}" role="img" style="color: var(--White);font-size: 90px; max-height: 120px; margin-top: -30px;"></div>
+                  <div class="location">
+                   <h1> {{CurrentCity.name}} </h1>
+                   <h6> {{CurrentCity.admin1}}</h6>
+                    <h5> {{CurrentCity.country}} </h5>
+               
+                  </div>
+                </div>
+                <div class="col-sm-6" style="margin-top: -15px;">
+                  <div class="temperature">{{ CurrentWeatherData.current.temperature_2m | number: '1.0-0' }}{{CurrentWeatherData.current_units.temperature_2m}}</div>
+                  <div class="weathercode">{{ getWeatherIntensity(CurrentWeatherData.current.weather_code) }} {{ getWeatherType(CurrentWeatherData.current.weather_code) }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Widgets -->
+          <div class="d-flex flex-sm-column" style="margin-top: 10px;">
+            <div class="container widget">
+             <div class="bi-sunrise" style="font-size: 2.5rem; color: var(--White); text-align: center;"></div>
+             <div class="sundata">{{WeeklyWeatherData.sunrise[CurrentDayIndex] | date: 'HH:mm'}}</div>
+            </div>
+            <div class="container widget"> 
+              <div class="bi-sunset" style="font-size: 2.5rem; color: var(--White);  text-align: center;"></div>
+              <div class="sundata">{{WeeklyWeatherData.sunset[CurrentDayIndex] | date: 'HH:mm'}}</div>   
+            </div>
+            <div class="container widget">
+              <div class="bi-moisture" style="font-size: 2.5rem; color: var(--White); text-align: center;"></div>
+              <div class="sundata">{{WeeklyWeatherData.rain_sum[CurrentDayIndex]}}mm</div>
+             </div>
+             <div class="container widget">
+              <div class="bi-wind" style="font-size: 2.5rem; color: var(--White); text-align: center;"></div>
+              <div class="sundata">{{WeeklyWeatherData.wind_speed_10m_max[CurrentDayIndex]}}km/h</div>
+             </div>
+          </div>
+
+          <!-- Hourly Forecast -->
+          <div class="col-md" style="flex: 1; margin-top: 10px;">
+            <div class="container HourlyWeatherData">
+              <div class="row" style="justify-content: center; margin-top: 10x;"></div>
+              <div class="HourlyList" style="max-height: 100%; overflow: scroll; overflow-x: hidden;">
+                <div class="list-group list-group-flush" *ngFor="let time of HourlyWeatherData.time; let i = index">
+                  <div class="container" *ngIf="(HourlyWeatherData.time[i] | date: 'dd') == (CurrentDate | date: 'dd')">
+                  <div class="list-group-item list-group-item-action" *ngIf="HourlyWeatherData.time[i] >= CurrentWeatherData.current.time" style="background-color: transparent; color: var(--White);">
+                    <div class="row" style="max-height: 50px; justify-content: center;">
+
+                      <div class="col-3" style="text-align: center;align-self: center; height: 100%;">
+                      {{HourlyWeatherData.time[i] | date: 'HH:mm'}}
+                      </div>
+
+                      <div class="col-2" style="text-align: center;align-self: center; height: 100%;">
+                        <div class="bi {{getWeatherIcon(HourlyWeatherData.weather_code[i],HourlyWeatherData.is_day[i])}}" [ngStyle]="{'color': getIconColor(HourlyWeatherData.weather_code,1)}" role="img" style="color: var(--White);font-size: 25px;"></div>
+                        {{HourlyWeatherData.temperature_2m[i]| number: '1.0-0'}}°
+                      </div>
+                      
+                      <div class="col-2" style="text-align: center;align-self: center; height: 100%;">
+                        <div class="bi bi-cloud-drizzle" role="img" style="color: var(--White);font-size: 25px;"></div>
+                        {{HourlyWeatherData.precipitation_probability[i]}}%
+                      </div>
+
+                      <div class="col-2" style="text-align: center;align-self: center; height: 100%;">
+                        <div class="bi bi-moisture" role="img" style="color: var(--White);font-size: 25px;"></div>
+                        {{HourlyWeatherData.relative_humidity_2m[i]}}%
+                      </div>
+
+                      <div class="col-3" style="text-align: center;align-self: center; height: 100%;">
+                        <div class="bi bi-wind" role="img" style="color: var(--White);font-size: 25px;"></div>
+                        {{HourlyWeatherData.wind_speed_10m[i]}}km/h
+                      </div>
+
+                    </div>
+                  </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>  
+
+        <!-- Weekly Forecast -->
+        <div class="row" style="width: 100%;">
+          <div class="col" style="flex: 1; margin-top: 10px;">
+            <div class="container WeeklyWeatherData">
+              <div class="DailyList" style="max-height: 100%; overflow: scroll; overflow-x: hidden;">
+                <div class="list-group list-group-flush" *ngFor="let time of WeeklyWeatherData.time; let i = index">
+                  <button type="button" class="list-group-item list-group-item-action" (click)="selectDay(WeeklyWeatherData.time[i], i)" style="background-color: var(--background-2); color: var(--White);">
+                    <div class="row" style="max-height: 50px; justify-content: center;">
+
+                      <div class="col-2" style="text-align: center;align-self: center; height: 100%;">
+                      {{WeeklyWeatherData.time[i] | date: 'EEE'}}
+                      </div>
+
+                      <div class="col-2" style="text-align: center;align-self: center; height: 100%;">
+                        <div class="bi {{getWeatherIcon(WeeklyWeatherData.weather_code[i],1)}}" [ngStyle]="{'color': getIconColor(WeeklyWeatherData.weather_code,1)}" role="img" style="color: var(--White);font-size: 25px;"></div>
+                      </div>
+  
+                      <div class="col-3" style="height: 100%; text-align: center;">
+                        <div class="row" style="justify-content: center; align-content: center;">
+                          {{WeeklyWeatherData.temperature_2m_max[i]| number: '1.0-0'}}°
+                          <div class="bi bi-arrow-up-short" role="img" style="color: rgb(200, 0, 0);font-size: 20px; margin-top: -2px;"></div>
+                        </div>
+                        <div class="row" style="justify-content: center; align-content: center;">
+                          {{WeeklyWeatherData.temperature_2m_min[i]| number: '1.0-0'}}°
+                          <div class="bi bi-arrow-down-short" role="img" style="color: rgb(0, 120, 200);font-size: 20px; margin-top: -2px;"></div>
+                        </div>
+                      </div>
+
+                      <div class="col-2" style="align-self: center; height: 100%; text-align: center;">
+                        <div class="bi bi-cloud-drizzle" role="img" style="color: var(--White);font-size: 25px;"></div>
+                        {{WeeklyWeatherData.precipitation_probability_max[i]}}%
+                      </div>
+
+                      <div class="col-2" style="align-self: center; height: 100%; text-align: center;">
+                        <div class="bi bi-sun" role="img" style="color: var(--White);font-size: 25px;"></div>
+                        {{WeeklyWeatherData.sunshine_duration[i] /60 /60 | number: '1.0-0'}}h
+                      </div>
+
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>  
+   
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </body>
+</html>
+<router-outlet />
